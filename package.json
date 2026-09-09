@@ -4,6 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "vitest run",
+    "build": "node --check scheduler.js",
+    "lint": "eslint scheduler.js test",
+    "typecheck": "tsc --allowJs --checkJs --noEmit --lib es2020 --skipLibCheck scheduler.js"
+  },
+  "devDependencies": {
+    "eslint": "^9.35.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   }
 }
