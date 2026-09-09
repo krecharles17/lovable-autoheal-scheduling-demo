@@ -1,5 +1,8 @@
 export function overlaps(first, second) {
-  return first.start < second.end && second.start < first.end;
+  const firstEnd = first.end + (first.cleanupMinutes ?? 0);
+  const secondEnd = second.end + (second.cleanupMinutes ?? 0);
+  return first.start < secondEnd &&
+    (second.start < firstEnd || (first.cleanupMinutes > 0 && second.start === firstEnd));
 }
 
 export function isAvailable(bookings, request) {
@@ -13,7 +16,9 @@ export function availableRooms(rooms, bookings, request) {
 }
 
 export function validateBooking(booking) {
-  if (!booking.roomId || !Number.isFinite(booking.start) || !Number.isFinite(booking.end)) {
+  if (!booking.roomId || !Number.isFinite(booking.start) || !Number.isFinite(booking.end) ||
+      (booking.cleanupMinutes !== undefined &&
+       (!Number.isFinite(booking.cleanupMinutes) || booking.cleanupMinutes < 0))) {
     throw new Error('A booking needs a room and finite start and end times');
   }
   if (booking.start >= booking.end) {

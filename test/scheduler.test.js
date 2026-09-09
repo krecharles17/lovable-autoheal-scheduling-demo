@@ -29,3 +29,23 @@ test('validation rejects empty and backwards bookings', () => {
   assert.throws(() => validateBooking({ roomId: 'blue', start: 4, end: 4 }));
   assert.throws(() => validateBooking({ roomId: 'blue', start: 5, end: 4 }));
 });
+
+test('cleanup blocks a booking immediately after checkout', () => {
+  const bookings = [{ roomId: 'blue', start: 600, end: 720, cleanupMinutes: 30 }];
+  assert.equal(isAvailable(bookings, { roomId: 'blue', start: 721, end: 750 }), false);
+});
+
+test('cleanup ends at its exact half-open boundary', () => {
+  const bookings = [{ roomId: 'blue', start: 600, end: 720, cleanupMinutes: 30 }];
+  assert.equal(isAvailable(bookings, { roomId: 'blue', start: 750, end: 780 }), true);
+});
+
+test('a booking after cleanup is available', () => {
+  const bookings = [{ roomId: 'blue', start: 600, end: 720, cleanupMinutes: 30 }];
+  assert.equal(isAvailable(bookings, { roomId: 'blue', start: 751, end: 780 }), true);
+});
+
+test('zero cleanup preserves the half-open boundary', () => {
+  const bookings = [{ roomId: 'blue', start: 600, end: 720, cleanupMinutes: 0 }];
+  assert.equal(isAvailable(bookings, { roomId: 'blue', start: 720, end: 750 }), true);
+});
